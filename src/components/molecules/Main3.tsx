@@ -1,194 +1,209 @@
-/* eslint-disable consistent-return */
-import React, { useEffect, useReducer, useRef, useState } from 'react';
+/* eslint-disable no-param-reassign */
+import React, { useCallback, useEffect, useReducer, useRef } from 'react';
 import * as d3 from 'd3';
-import { SimulationNodeDatum, Selection, BaseType, D3DragEvent, Simulation, SimulationLinkDatum } from 'd3';
+import type { SimulationNodeDatum, Simulation } from 'd3';
 import { shallow } from 'zustand/shallow';
 import { useGraphStore } from '@/store/graph';
-import { Vertex } from '@/types/graph';
+import type { Vertex } from '@/types/graph';
 import { useArrowStore, useShortestPathStore } from '@/store';
 import { MAIN_COLOR, SECOND_COLOR } from '@/constants';
-import { useIsMounted } from '@/hooks/use-mounted';
 import { isShortestEdge } from '@/services';
 
-type DragEvent = D3DragEvent<Element, SimulationNodeDatum, SimulationNodeDatum>;
-
 const arrowMarkId = 'arrow';
-const WIDTH = 600;
-const HEIGHT = 600;
+const WIDTH = 542;
+const HEIGHT = 542;
 
-interface CustomLink {
-  source: SimulationNodeDatum;
-  target: SimulationNodeDatum;
-  index?: number | undefined;
-}
+type SimulationNode = SimulationNodeDatum & Vertex;
+type SimulationLink = {
+  source: SimulationNode;
+  target: SimulationNode;
+  cost: number;
+};
 
 export default function App() {
+  // svg ref element
   const svgRef = useRef<SVGSVGElement | null>(null);
-  const isMounted = useIsMounted();
-  const [, forceRender] = useReducer<(x: number) => number>((x) => x + 1, 0);
+  // d3 forceSimulation 반환값
+  const simulationRef = useRef<Simulation<SimulationNode, undefined>>();
+  // 현재 드래깅 되는 노드
+  const draggingNodeRef = useRef<SimulationNode | null>(null);
+  const [, forceUpdate] = useReducer((x: number) => x + 1, 0);
 
-  const { nodes, links } = useGraphStore((state) => state, shallow);
+  const nodes = useGraphStore((state) => state.nodes, shallow) as SimulationNode[];
+  const links = useGraphStore((state) => state.links, shallow) as unknown as SimulationLink[];
+
+  // 마커 표시 여부
   const isArrow = useArrowStore((state) => state.isArrow);
+  // 최단경로
   const shortestPathState = useShortestPathStore(({ from, to, shortestPath }) => ({ from, to, shortestPath }), shallow);
 
-  const [simulationNodes, setSimulationNodes] = useState<Array<SimulationNodeDatum & Vertex>>([]);
-  const [simulationLinks, setSimulationLinks] = useState<Array<SimulationLinkDatum<SimulationNodeDatum>>>([]);
-  const simulationRef = useRef<Simulation<d3.SimulationNodeDatum & Vertex, undefined>>();
-
+  // Simulation 초기화 - tick에서 forceUpdate만 호출
   useEffect(() => {
-    if (!svgRef.current) return;
-    if (!isMounted) forceRender();
-
-    const svg = d3.select(svgRef.current);
-    const forceLink = d3
-      .forceLink(links)
-      .id((d: SimulationNodeDatum) => (d as Vertex).value)
-      .distance(140);
-
     simulationRef.current = d3
-      .forceSimulation(nodes as Array<SimulationNodeDatum & Vertex>)
-      .force('link', forceLink)
+      .forceSimulation(nodes)
+      .force(
+        'link',
+        d3
+          .forceLink(links)
+          .id((d: SimulationNodeDatum) => (d as Vertex).value)
+          .distance(140),
+      )
       .force('charge', d3.forceManyBody().strength(-240))
       .force('x', d3.forceX(WIDTH / 2))
-      .force('y', d3.forceY(HEIGHT / 2));
-
-    svg
-      .selectAll('circle')
-      .data(nodes)
-      .on('mouseenter', function hover() {
-        d3.select(this).attr('fill', SECOND_COLOR);
-      })
-      .call(
-        d3
-          .drag()
-          .on('start', function dragStarted(e: DragEvent) {
-            if (!e.active) simulationRef.current?.alphaTarget(0.3).restart();
-            e.subject.fx = e.subject.x;
-            e.subject.fy = e.subject.y;
-          })
-          .on('drag', function dragged(e: DragEvent) {
-            e.subject.fx = e.x;
-            e.subject.fy = e.y;
-          })
-          .on('end', function dragEnded(e: DragEvent) {
-            if (!e.active) simulationRef.current?.alphaTarget(0);
-            e.subject.fx = null;
-            e.subject.fy = null;
-          }) as (
-          selection: Selection<BaseType | SVGCircleElement, Vertex & SimulationNodeDatum, SVGGElement, unknown>,
-        ) => void,
-      );
-
-    simulationRef.current.on('tick', function tick() {
-      // eslint-disable-next-line react/no-this-in-sfc
-      const simulationNodesData = this.nodes().map((node) => ({
-        ...node,
-        id: node.value,
-      }));
-
-      setSimulationNodes(simulationNodesData);
-      setSimulationLinks([...forceLink.links()]);
-    });
+      .force('y', d3.forceY(HEIGHT / 2))
+      .on('tick', forceUpdate);
 
     return () => {
-      if (simulationRef.current) {
-        simulationRef.current.stop();
-      }
+      simulationRef.current?.stop();
     };
-  }, [isMounted, nodes, links]);
+  }, [nodes, links]);
+
+  // Pointer event handlers for drag
+  // 실제 element size, viewbox 싱크를 위한 좌표 반환
+  const getPointerPosition = useCallback((e: React.PointerEvent): { x: number; y: number } | null => {
+    const svg = svgRef.current;
+    if (!svg) return null;
+    const pt = svg.createSVGPoint();
+    pt.x = e.clientX;
+    pt.y = e.clientY;
+    const svgP = pt.matrixTransform(svg.getScreenCTM()?.inverse());
+    return { x: svgP.x, y: svgP.y };
+  }, []);
+
+  const handlePointerDown = useCallback((e: React.PointerEvent, node: SimulationNode) => {
+    e.currentTarget.setPointerCapture(e.pointerId);
+    simulationRef.current?.alphaTarget(0.3).restart();
+    node.fx = node.x;
+    node.fy = node.y;
+    draggingNodeRef.current = node;
+  }, []);
+
+  const handlePointerMove = useCallback(
+    (e: React.PointerEvent) => {
+      const node = draggingNodeRef.current;
+      if (!node) return;
+      const pos = getPointerPosition(e);
+      if (pos) {
+        node.fx = pos.x;
+        node.fy = pos.y;
+      }
+    },
+    [getPointerPosition],
+  );
+
+  const handlePointerUp = useCallback(() => {
+    const node = draggingNodeRef.current;
+    if (!node) return;
+    simulationRef.current?.alphaTarget(0);
+    node.fx = null;
+    node.fy = null;
+    draggingNodeRef.current = null;
+  }, []);
 
   return (
     <svg width={WIDTH} height={HEIGHT} viewBox={`0 0 ${WIDTH} ${HEIGHT}`} ref={svgRef}>
+      {/* Arrow marker 정의 */}
       <defs>
         <marker
           id={arrowMarkId}
           viewBox="0 0 10 10"
-          refX="23"
+          refX="24"
           refY="5"
-          markerWidth="8"
-          markerHeight="8"
+          markerWidth="6"
+          markerHeight="6"
           orient="auto-start-reverse"
         >
           <path d="M 0 0 L 10 5 L 0 10 z" fill={MAIN_COLOR} />
         </marker>
       </defs>
+
+      {/* Links (edges) */}
       <g strokeOpacity={0.8} strokeLinecap="round">
-        {simulationLinks.map((link, index) => {
-          const { source, target } = link as CustomLink;
+        {links.map((link, index) => {
+          const { source, target, cost } = link;
           const pathId = `edge-path-${index}`;
-          const isShortestLink = isShortestEdge(
-            (source as Vertex).value,
-            (target as Vertex).value,
-            shortestPathState.shortestPath,
-          );
+          const isShortestLink = isShortestEdge(source.value, target.value, shortestPathState.shortestPath);
 
           return (
-            <React.Fragment key={link.index}>
+            // eslint-disable-next-line react/no-array-index-key
+            <React.Fragment key={`${source.value}-${target.value}-${index}`}>
               <path
                 id={pathId}
-                d={`M ${source.x} ${source.y} L ${target.x} ${target.y}`}
-                strokeWidth={isShortestLink ? '9' : '2'}
+                d={`M ${source.x ?? 0} ${source.y ?? 0} L ${target.x ?? 0} ${target.y ?? 0}`}
+                strokeWidth={isShortestLink ? 9 : 2}
                 stroke={isShortestLink ? SECOND_COLOR : MAIN_COLOR}
+                fill="none"
               />
-              <path
-                id={pathId}
-                d={`M ${source.x} ${source.y} L ${target.x} ${target.y}`}
-                strokeWidth="2"
-                stroke={MAIN_COLOR}
-                markerEnd={isArrow === true ? `url(#${arrowMarkId})` : ''}
-              />
-              <text
-                id={pathId}
-                className="pointer-events-none"
-                dy="-4"
-                dx="60"
-                fontSize="15"
-                fill={MAIN_COLOR}
-                textAnchor="middle"
-              >
-                <textPath xlinkHref={`#${pathId}`} className="pointer-events-none">
-                  {link.index}
-                </textPath>
-              </text>
+              {isShortestLink && (
+                <path
+                  d={`M ${source.x ?? 0} ${source.y ?? 0} L ${target.x ?? 0} ${target.y ?? 0}`}
+                  strokeWidth={2}
+                  stroke={MAIN_COLOR}
+                  fill="none"
+                  markerEnd={isArrow ? `url(#${arrowMarkId})` : ''}
+                />
+              )}
+              {!isShortestLink && isArrow && (
+                <path
+                  d={`M ${source.x ?? 0} ${source.y ?? 0} L ${target.x ?? 0} ${target.y ?? 0}`}
+                  strokeWidth={2}
+                  stroke={MAIN_COLOR}
+                  fill="none"
+                  markerEnd={`url(#${arrowMarkId})`}
+                />
+              )}
+              {cost !== undefined && (
+                <text
+                  className="pointer-events-none"
+                  dy="-4"
+                  dx="60"
+                  fontSize="12"
+                  fill={MAIN_COLOR}
+                  textAnchor="middle"
+                >
+                  <textPath xlinkHref={`#${pathId}`}>{cost}</textPath>
+                </text>
+              )}
             </React.Fragment>
           );
         })}
       </g>
-      <g>
-        {simulationNodes.map((node) => {
+
+      {/* Nodes (circles) */}
+      <g stroke={MAIN_COLOR} strokeOpacity={1} strokeWidth={2.5}>
+        {nodes.map((node) => {
           const isShortestVertex = shortestPathState.shortestPath.some((vertex) => vertex === node.value);
+
           return (
-            <React.Fragment key={node.index}>
-              <circle
-                className="cursor-pointer"
-                cx={node.x}
-                cy={node.y}
-                r={20}
-                fill={isShortestVertex ? SECOND_COLOR : MAIN_COLOR}
-                strokeWidth={2.5}
-                stroke={MAIN_COLOR}
-                key={node.index}
-                onMouseEnter={(e) => {
-                  e.currentTarget.setAttribute('fill', isShortestVertex ? MAIN_COLOR : SECOND_COLOR);
-                }}
-                onMouseOut={(e) => {
-                  e.currentTarget.setAttribute('fill', isShortestVertex ? SECOND_COLOR : MAIN_COLOR);
-                }}
-              />
-              <text
-                className="pointer-events-none"
-                x={node.x}
-                y={node.y}
-                dy=".35em"
-                fontSize="15"
-                fill="white"
-                textAnchor="middle"
-              >
-                {node.value}
-              </text>
-            </React.Fragment>
+            <circle
+              key={node.value}
+              className="cursor-pointer"
+              cx={node.x ?? 0}
+              cy={node.y ?? 0}
+              r={17.5}
+              fill={isShortestVertex ? SECOND_COLOR : MAIN_COLOR}
+              onPointerDown={(e) => handlePointerDown(e, node)}
+              onPointerMove={handlePointerMove}
+              onPointerUp={handlePointerUp}
+              onPointerCancel={handlePointerUp}
+              onMouseEnter={(e) => {
+                e.currentTarget.setAttribute('fill', SECOND_COLOR);
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.setAttribute('fill', isShortestVertex ? SECOND_COLOR : MAIN_COLOR);
+              }}
+            />
           );
         })}
+      </g>
+
+      {/* Node labels */}
+      <g className="pointer-events-none" fill="white" fontSize={12}>
+        {nodes.map((node) => (
+          <text key={`label-${node.value}`} x={node.x ?? 0} y={node.y ?? 0} textAnchor="middle" dy="6">
+            {node.value}
+          </text>
+        ))}
       </g>
     </svg>
   );

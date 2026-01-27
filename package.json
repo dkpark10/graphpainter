@@ -8,6 +8,9 @@
     "dev": "webpack-dev-server --config webpack.dev.js",
     "build": "webpack --config webpack.prod.js",
     "build:local": "cross-env LOCAL_BUILD=true webpack --config webpack.prod.js",
+    "build:extension": "webpack --config webpack.extension.js",
+    "zip:extension": "cd dist && zip -r ../graphpainter-extension.zip . && cd ..",
+    "package:extension": "yarn build:extension && yarn zip:extension",
     "prebuild": "rimraf dist",
     "lint": "eslint './src/**/*.{ts,tsx,js,jsx}'",
     "lint:fix": "eslint --fix \"./src/**/*.{ts,tsx,js,jsx}\"",
@@ -78,5 +81,5 @@
     "webpack-dev-server": "^4.7.1",
     "webpack-merge": "^5.8.0"
   },
-  "packageManager": "yarn@3.6.1"
+  "packageManager": "yarn@4.12.0"
 }

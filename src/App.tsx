@@ -1,5 +1,4 @@
-import Main from '@/components/molecules/Main';
-// import Main3 from '@/components/molecules/Main3';
+import Svg from '@/components/molecules/Main3';
 import Textarea from '@/components/atoms/TextArea';
 import Config from '@/components/molecules/Config';
 // eslint-disable-next-line import/extensions
@@ -21,7 +20,7 @@ export default function App() {
           <Config />
         </aside>
         <main className="w-[542px] h-[100%] border border-main-color rounded-xl">
-          <Main />
+          <Svg />
         </main>
       </section>
     </>

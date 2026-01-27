@@ -1,6 +1,28 @@
 {
-  "name": "graphpainter",
-  "description": "graph painter",
+  "name": "Graph Painter",
+  "short_name": "GraphPainter",
+  "description": "그래프 자료구조를 시각화하고 다익스트라 등의 알고리즘을 실행해볼 수 있는 도구입니다. Visualize graph data structures and run algorithms like Dijkstra.",
   "manifest_version": 3,
-  "version": "2.4.0"
+  "version": "2.4.0",
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png"
+    },
+    "default_title": "Graph Painter"
+  },
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "permissions": [],
+  "author": "dkpark10",
+  "homepage_url": "https://dkpark10.github.io/graphpainter"
 }

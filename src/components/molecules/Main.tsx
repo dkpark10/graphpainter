@@ -17,7 +17,7 @@ const WIDTH = 542;
 const HEIGHT = 542;
 
 /** @todo 선언형으로 바꿔보자.. */
-export default function App() {
+export default function Svg() {
   const simulationRef = useRef<d3.Simulation<d3.SimulationNodeDatum & Vertex, undefined>>();
 
   const svgRef = useRef<SVGSVGElement | null>(null);
