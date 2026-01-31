@@ -2,3 +2,4 @@
 jest.*"
 webpack.*
 *.d.ts
+background.js

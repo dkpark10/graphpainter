@@ -7,7 +7,7 @@ export interface RunForceState {
 }
 
 const runForceState: StateCreator<RunForceState> = (set) => ({
-  runForce: false,
+  runForce: true,
   setRunForce: () => set(({ runForce }) => ({ runForce: !runForce })),
 });
 

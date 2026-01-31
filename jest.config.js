@@ -9,7 +9,5 @@ module.exports = {
   },
   testEnvironment: 'jsdom',
   transformIgnorePatterns: ['<rootDir>/node_modules/'],
-  setupFilesAfterEnv: [
-    '<rootDir>/src/setupTests.js',
-  ],
+  setupFilesAfterEnv: ['<rootDir>/src/setupTests.js'],
 };

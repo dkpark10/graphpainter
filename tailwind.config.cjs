@@ -1,5 +1,3 @@
-import { MAIN_COLOR, ERROR_COLOR } from './src/constants';
-
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
@@ -9,10 +7,10 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        'main-color': MAIN_COLOR,
-        'error-color': ERROR_COLOR,
+        'main-color': 'var(--graph-main)',
+        'error-color': 'var(--graph-error)',
       },
     },
   },
-  plugins: [],
+  plugins: [require("tailwind-scrollbar-hide")],
 };

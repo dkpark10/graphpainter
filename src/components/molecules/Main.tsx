@@ -4,11 +4,14 @@ import { useEffect, useRef } from 'react';
 import * as d3 from 'd3';
 import type { SimulationNodeDatum, Selection, BaseType, D3DragEvent } from 'd3';
 import { shallow } from 'zustand/shallow';
-import { useGraphStore } from '@/store/graph';
 import { Vertex, AttrType } from '@/types/graph';
-import { useArrowStore, useShortestPathStore } from '@/store';
-import { MAIN_COLOR, SECOND_COLOR } from '@/constants';
+import { useGraphStore } from '@/store/graph';
+import { useArrowStore } from '@/store/node-arrow';
+import { useShortestPathStore } from '@/store/shortestpath';
 import { isShortestEdge } from '@/services';
+
+const MAIN_COLOR = 'var(--graph-main)';
+const SECOND_COLOR = 'var(--graph-accent)';
 
 type DragEvent = D3DragEvent<Element, SimulationNodeDatum, SimulationNodeDatum>;
 

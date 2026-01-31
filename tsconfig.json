@@ -9,6 +9,7 @@
     "outDir": "./dist",
     "jsx": "react-jsx",
     "sourceMap": true,
+    "baseUrl": ".",
     "allowJs": false, // js 파일들 import 할 지 여부 
     "noImplicitReturns": true, // 함수내 모든 경로에서 리턴하지 않을경우 에러
     "noImplicitAny": true,  // any 타입 발생시 에러
@@ -36,11 +37,12 @@
       "./node_modules/@types",
     ],
     "types": [
+      "@types/node",
       "@types/jest"
     ],
   },
   "exclude": [
-    "node_modules"
+    "node_modules",
   ],
   "include": [
     "./src/**/*",

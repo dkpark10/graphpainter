@@ -1,5 +1,7 @@
 import React, { useRef } from 'react';
-import { MAIN_COLOR, SECOND_COLOR } from '@/constants';
+
+const MAIN_COLOR = 'var(--graph-main)';
+const SECOND_COLOR = 'var(--graph-accent)';
 
 interface NodeProps {
   size: { y: number; x: number };

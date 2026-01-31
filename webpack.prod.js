@@ -2,6 +2,7 @@ const fs = require('fs/promises');
 const packageInfo = require('./package.json');
 const dateFns = require('date-fns');
 const { merge } = require('webpack-merge');
+const webpack = require('webpack');
 const { webpackCommonConfig } = require('./webpack.common.js');
 const path = require('path');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
@@ -14,7 +15,7 @@ class CreateFilePlugin {
       const buildPath = compilation.options.output.path;
       const version = packageInfo.version;
       const buildDate = dateFns.format(new Date(), 'yymmdd-hhmmss');
-      const text =`version: ${version} ${buildDate}`;
+      const text = `version: ${version} ${buildDate}`;
 
       fs.writeFile(`${buildPath}/version.txt`, text, 'utf8').catch((err) => {
         console.error(err);
@@ -40,6 +41,9 @@ module.exports = merge(webpackCommonConfig, {
     maxAssetSize: 512000,
   },
   plugins: [
+    new webpack.DefinePlugin({
+      'process.env.BUILD_TARGET': JSON.stringify('web'),
+    }),
     new CreateFilePlugin(),
     // 파일, 폴더 복사 플러그인
     new CopyWebpackPlugin({

@@ -1,4 +1,4 @@
-import { isObject } from '@/utils/is-object';
+import { isObject } from '@/utils';
 
 test('원시 타입을 테스트 한다', () => {
   expect(isObject(1)).toBeFalsy();

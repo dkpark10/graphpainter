@@ -1,23 +1,29 @@
 import { useRef, useState } from 'react';
 import { shallow } from 'zustand/shallow';
-import { Switch } from '@headlessui/react';
-import { DijkstraBuilder2 } from '@/utils/dijkstra2';
-import { useArrowStore, useShortestPathStore, useGraphStore } from '@/store';
-
-type InputTuple = {
-  from: HTMLInputElement | null;
-  to: HTMLInputElement | null;
-};
+import Switch from '@/components/ui/switch';
+import Label from '@/components/ui/label';
+import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
+import { DijkstraBuilder } from '@/utils/dijkstra';
+import { useArrowStore } from '@/store/node-arrow';
+import { useShortestPathStore } from '@/store/shortestpath';
+import { useGraphStore } from '@/store/graph';
+import { useRunForce } from '@/store/run-force';
 
 export default function Config() {
-  const inputFromToRef = useRef<InputTuple>({
-    from: null,
-    to: null,
-  });
+  const inputFromRef = useRef<HTMLInputElement | null>(null);
+  const inputToRef = useRef<HTMLInputElement | null>(null);
 
   const { isArrow, setArrowDirect } = useArrowStore((state) => ({
     setArrowDirect: state.setArrowDirect,
     isArrow: state.isArrow,
+  }));
+
+  const { runForce, setRunForce } = useRunForce((state) => ({
+    runForce: state.runForce,
+    setRunForce: state.setRunForce,
   }));
 
   const setShortestPath = useShortestPathStore((state) => state.setShortestPath);
@@ -27,66 +33,74 @@ export default function Config() {
   const { nodes, rawInputData } = useGraphStore((state) => state, shallow);
 
   const isExistNodes = () =>
-    nodes.some((node) => node.value === inputFromToRef.current.from?.value) &&
-    nodes.some((node) => node.value === inputFromToRef.current.to?.value);
+    nodes.some((node) => node.value === inputFromRef.current?.value) &&
+    nodes.some((node) => node.value === inputToRef.current?.value);
 
   const findShortestPath = () => {
-    if (!inputFromToRef.current.from || !inputFromToRef.current.to || !isExistNodes()) {
+    if (!inputFromRef.current || !inputToRef.current || !isExistNodes()) {
       setInvalidInputNodes(true);
       return;
     }
 
     setInvalidInputNodes(false);
 
-    const dijkstra = new DijkstraBuilder2()
+    const dijkstra = new DijkstraBuilder()
       .setGraphRawData(rawInputData)
-      .setFromVertex(inputFromToRef.current.from?.value)
-      .setToVertex(inputFromToRef.current.to?.value)
+      .setFromVertex(inputFromRef.current?.value)
+      .setToVertex(inputToRef.current?.value)
       .build();
 
     setShortestPath({
-      from: inputFromToRef.current.from?.value,
-      to: inputFromToRef.current.to?.value,
+      from: inputFromRef.current?.value,
+      to: inputToRef.current?.value,
       shortestPath: dijkstra.run(),
     });
   };
 
   return (
-    <div className="mt-[20px] w-[200px] h-[50%] p-2.5 flex items-center border border-main-color flex-col">
-      <div className="m-3 text-sm">arrow marker</div>
-      <Switch
-        checked={isArrow}
-        onChange={() => setArrowDirect()}
-        className="group inline-flex h-6 w-14 items-center rounded-full bg-gray-400 transition data-[checked]:bg-pink-600"
-      >
-        <span className="size-4 translate-x-1 rounded-full bg-white transition group-data-[checked]:translate-x-9" />
-      </Switch>
+    <Card>
+      <CardContent className="p-4 space-y-4">
+        {/* Arrow Marker Toggle */}
+        <div className="flex items-center justify-between">
+          <Label htmlFor="arrow-mode" className="text-sm font-medium">
+            Arrow Marker
+          </Label>
+          <Switch id="arrow-mode" checked={isArrow} onCheckedChange={setArrowDirect} />
+        </div>
 
-      <div className="m-3 text-sm">find shortest path</div>
-      <div className="flex w-full justify-center">
-        {['from', 'to'].map((ele) => (
-          <label className="text-sm" htmlFor={ele} key={ele}>
-            <span className="p-1">{ele}</span>
-            <input
-              className="w-10 h-6 outline-main-color bg-slate-950 text-white px-1 rounded-md"
-              type="text"
-              name={`path-${ele}`}
-              ref={(el) => {
-                inputFromToRef.current[ele as 'to' | 'from'] = el;
-              }}
-              id={ele}
-            />
-          </label>
-        ))}
-      </div>
-      {invalidInputNodes && <div className="text-xs text-error-color h-3">invalid input</div>}
-      <button
-        className="bg-main-color text-white w-[90%] h-8 rounded-md my-5 hover:bg-pink-600"
-        type="button"
-        onClick={findShortestPath}
-      >
-        find
-      </button>
-    </div>
+        {/* Simulation Toggle */}
+        <div className="flex items-center justify-between">
+          <Label htmlFor="simulation-mode" className="text-sm font-medium">
+            Force Simulation
+          </Label>
+          <Switch id="simulation-mode" checked={runForce} onCheckedChange={setRunForce} />
+        </div>
+
+        <Separator />
+
+        {/* Shortest Path Finder */}
+        <div className="space-y-3">
+          <Label className="text-sm font-medium">Find Shortest Path</Label>
+          <div className="flex gap-2">
+            <div className="flex-1 space-y-1">
+              <Label htmlFor="from" className="text-xs text-muted-foreground">
+                From
+              </Label>
+              <Input id="from" name="path-from" className="h-8" ref={inputFromRef} />
+            </div>
+            <div className="flex-1 space-y-1">
+              <Label htmlFor="to" className="text-xs text-muted-foreground">
+                To
+              </Label>
+              <Input id="to" name="path-to" className="h-8" ref={inputToRef} />
+            </div>
+          </div>
+          {invalidInputNodes && <p className="text-xs text-destructive">Invalid node input</p>}
+          <Button className="w-full cursor-pointer" size="sm" onClick={findShortestPath}>
+            Find Path
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
   );
 }

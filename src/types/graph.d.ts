@@ -16,4 +16,10 @@ export interface GraphData {
   links: Array<Edge>;
 }
 
-export type AttrType = null | string | number | boolean | ReadonlyArray<string | number> | ValueFn<GElement, Datum, null | string | number | boolean | ReadonlyArray<string | number>>;
+export type AttrType =
+  | null
+  | string
+  | number
+  | boolean
+  | ReadonlyArray<string | number>
+  | ValueFn<GElement, Datum, null | string | number | boolean | ReadonlyArray<string | number>>;

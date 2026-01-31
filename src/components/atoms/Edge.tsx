@@ -1,4 +1,4 @@
-import { useArrowStore } from '@/store';
+import { useArrowStore } from '@/store/node-arrow';
 
 interface EdgeProps {
   from: number[];

@@ -1,4 +1,4 @@
-import { HeapQueue } from '@/utils';
+import { HeapQueue } from '@/utils/heap-queue';
 
 interface Person {
   height: number;

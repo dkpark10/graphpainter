@@ -29,6 +29,9 @@
     "@typescript-eslint"
   ],
   "rules": {
+    "react/prop-types": ["off"], // prop type off
+    "react/require-default-props": ["off"], // 옵셔널 props 허용 여부
+    "react/jsx-props-no-spreading": ["off"], // props spread 허용 여부
     "import/extensions": [
       "error",
       {

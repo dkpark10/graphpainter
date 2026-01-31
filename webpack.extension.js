@@ -2,6 +2,7 @@ const fs = require('fs/promises');
 const packageInfo = require('./package.json');
 const dateFns = require('date-fns');
 const { merge } = require('webpack-merge');
+const webpack = require('webpack');
 const { webpackCommonConfig } = require('./webpack.common.js');
 const path = require('path');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
@@ -38,6 +39,9 @@ module.exports = merge(webpackCommonConfig, {
     maxAssetSize: 512000,
   },
   plugins: [
+    new webpack.DefinePlugin({
+      'process.env.BUILD_TARGET': JSON.stringify('extension'),
+    }),
     new CreateFilePlugin(),
     new CopyWebpackPlugin({
       patterns: [

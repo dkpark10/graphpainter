@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { shallow } from 'zustand/shallow';
 import { parseGraph } from '@/services/parse-graph';
-import { useGraphStore } from '@/store';
+import { useGraphStore } from '@/store/graph';
 import { useDebounce } from '@/hooks/use-debounce';
+import Textarea from '@/components/ui/textarea';
 
 export default function TextArea(): JSX.Element {
   const initInputData = useGraphStore((state) => state.rawInputData);
@@ -19,8 +20,9 @@ export default function TextArea(): JSX.Element {
   }, [debouncedInputValue, setGraph]);
 
   return (
-    <textarea
-      className="resize-none w-[200px] h-[50%] p-2.5 text-white bg-slate-950"
+    <Textarea
+      id="textarea"
+      className="resize-none h-[100%] text-white bg-foreground"
       value={textAreaValue}
       onChange={(e) => {
         setTextAreaValue(e.target.value);

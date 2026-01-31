@@ -3,15 +3,22 @@ import React, { useCallback, useEffect, useReducer, useRef } from 'react';
 import * as d3 from 'd3';
 import type { SimulationNodeDatum, Simulation } from 'd3';
 import { shallow } from 'zustand/shallow';
-import { useGraphStore } from '@/store/graph';
 import type { Vertex } from '@/types/graph';
-import { useArrowStore, useShortestPathStore } from '@/store';
-import { MAIN_COLOR, SECOND_COLOR } from '@/constants';
+import { useGraphStore } from '@/store/graph';
+import { useArrowStore } from '@/store/node-arrow';
+import { useShortestPathStore } from '@/store/shortestpath';
 import { isShortestEdge } from '@/services';
+import { BUILD_TARGET } from '@/utils';
+import { useRunForce } from '@/store/run-force';
 
 const arrowMarkId = 'arrow';
-const WIDTH = 542;
-const HEIGHT = 542;
+const WIDTH = BUILD_TARGET === 'extension' ? 372 : 542;
+const HEIGHT = BUILD_TARGET === 'extension' ? 372 : 542;
+const diameter = BUILD_TARGET === 'extension' ? 16 : 18;
+const linkDistance = BUILD_TARGET === 'extension' ? 54 : 82;
+const getTextDx = (d: number) => {
+  return BUILD_TARGET === 'extension' ? d / 2 + d / 2 : d / 2 + d / 4;
+};
 
 type SimulationNode = SimulationNodeDatum & Vertex;
 type SimulationLink = {
@@ -36,6 +43,8 @@ export default function App() {
   const isArrow = useArrowStore((state) => state.isArrow);
   // 최단경로
   const shortestPathState = useShortestPathStore(({ from, to, shortestPath }) => ({ from, to, shortestPath }), shallow);
+  // 시뮬레이션 실행 여부
+  const runForce = useRunForce((state) => state.runForce);
 
   // Simulation 초기화 - tick에서 forceUpdate만 호출
   useEffect(() => {
@@ -46,9 +55,9 @@ export default function App() {
         d3
           .forceLink(links)
           .id((d: SimulationNodeDatum) => (d as Vertex).value)
-          .distance(140),
+          .distance(linkDistance),
       )
-      .force('charge', d3.forceManyBody().strength(-240))
+      .force('charge', d3.forceManyBody().strength(-1200).distanceMin(linkDistance))
       .force('x', d3.forceX(WIDTH / 2))
       .force('y', d3.forceY(HEIGHT / 2))
       .on('tick', forceUpdate);
@@ -57,6 +66,16 @@ export default function App() {
       simulationRef.current?.stop();
     };
   }, [nodes, links]);
+
+  // 시뮬레이션 실행/정지 제어
+  useEffect(() => {
+    if (!simulationRef.current) return;
+    if (runForce) {
+      simulationRef.current.alpha(0.3).restart();
+      return;
+    }
+    simulationRef.current.stop();
+  }, [runForce]);
 
   // Pointer event handlers for drag
   // 실제 element size, viewbox 싱크를 위한 좌표 반환
@@ -70,13 +89,18 @@ export default function App() {
     return { x: svgP.x, y: svgP.y };
   }, []);
 
-  const handlePointerDown = useCallback((e: React.PointerEvent, node: SimulationNode) => {
-    e.currentTarget.setPointerCapture(e.pointerId);
-    simulationRef.current?.alphaTarget(0.3).restart();
-    node.fx = node.x;
-    node.fy = node.y;
-    draggingNodeRef.current = node;
-  }, []);
+  const handlePointerDown = useCallback(
+    (e: React.PointerEvent, node: SimulationNode) => {
+      e.currentTarget.setPointerCapture(e.pointerId);
+      if (runForce) {
+        simulationRef.current?.alphaTarget(0.3).restart();
+      }
+      node.fx = node.x;
+      node.fy = node.y;
+      draggingNodeRef.current = node;
+    },
+    [runForce],
+  );
 
   const handlePointerMove = useCallback(
     (e: React.PointerEvent) => {
@@ -86,19 +110,26 @@ export default function App() {
       if (pos) {
         node.fx = pos.x;
         node.fy = pos.y;
+        node.x = pos.x;
+        node.y = pos.y;
+        if (!runForce) {
+          forceUpdate();
+        }
       }
     },
-    [getPointerPosition],
+    [getPointerPosition, runForce],
   );
 
   const handlePointerUp = useCallback(() => {
     const node = draggingNodeRef.current;
     if (!node) return;
-    simulationRef.current?.alphaTarget(0);
-    node.fx = null;
-    node.fy = null;
+    if (runForce) {
+      simulationRef.current?.alphaTarget(0);
+      node.fx = null;
+      node.fy = null;
+    }
     draggingNodeRef.current = null;
-  }, []);
+  }, [runForce]);
 
   return (
     <svg width={WIDTH} height={HEIGHT} viewBox={`0 0 ${WIDTH} ${HEIGHT}`} ref={svgRef}>
@@ -113,7 +144,7 @@ export default function App() {
           markerHeight="6"
           orient="auto-start-reverse"
         >
-          <path d="M 0 0 L 10 5 L 0 10 z" fill={MAIN_COLOR} />
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--graph-main)" />
         </marker>
       </defs>
 
@@ -131,14 +162,14 @@ export default function App() {
                 id={pathId}
                 d={`M ${source.x ?? 0} ${source.y ?? 0} L ${target.x ?? 0} ${target.y ?? 0}`}
                 strokeWidth={isShortestLink ? 9 : 2}
-                stroke={isShortestLink ? SECOND_COLOR : MAIN_COLOR}
+                stroke={isShortestLink ? 'var(--graph-accent)' : 'var(--graph-main)'}
                 fill="none"
               />
               {isShortestLink && (
                 <path
                   d={`M ${source.x ?? 0} ${source.y ?? 0} L ${target.x ?? 0} ${target.y ?? 0}`}
                   strokeWidth={2}
-                  stroke={MAIN_COLOR}
+                  stroke="var(--graph-main)"
                   fill="none"
                   markerEnd={isArrow ? `url(#${arrowMarkId})` : ''}
                 />
@@ -147,7 +178,7 @@ export default function App() {
                 <path
                   d={`M ${source.x ?? 0} ${source.y ?? 0} L ${target.x ?? 0} ${target.y ?? 0}`}
                   strokeWidth={2}
-                  stroke={MAIN_COLOR}
+                  stroke="var(--graph-main)"
                   fill="none"
                   markerEnd={`url(#${arrowMarkId})`}
                 />
@@ -156,9 +187,9 @@ export default function App() {
                 <text
                   className="pointer-events-none"
                   dy="-4"
-                  dx="60"
+                  dx={getTextDx(linkDistance)}
                   fontSize="12"
-                  fill={MAIN_COLOR}
+                  fill="var(--graph-main)"
                   textAnchor="middle"
                 >
                   <textPath xlinkHref={`#${pathId}`}>{cost}</textPath>
@@ -170,7 +201,7 @@ export default function App() {
       </g>
 
       {/* Nodes (circles) */}
-      <g stroke={MAIN_COLOR} strokeOpacity={1} strokeWidth={2.5}>
+      <g stroke="var(--graph-main)" strokeOpacity={1} strokeWidth={2.5}>
         {nodes.map((node) => {
           const isShortestVertex = shortestPathState.shortestPath.some((vertex) => vertex === node.value);
 
@@ -180,17 +211,17 @@ export default function App() {
               className="cursor-pointer"
               cx={node.x ?? 0}
               cy={node.y ?? 0}
-              r={17.5}
-              fill={isShortestVertex ? SECOND_COLOR : MAIN_COLOR}
+              r={diameter}
+              fill={isShortestVertex ? 'var(--graph-accent)' : 'var(--graph-main)'}
               onPointerDown={(e) => handlePointerDown(e, node)}
               onPointerMove={handlePointerMove}
               onPointerUp={handlePointerUp}
               onPointerCancel={handlePointerUp}
               onMouseEnter={(e) => {
-                e.currentTarget.setAttribute('fill', SECOND_COLOR);
+                e.currentTarget.setAttribute('fill', 'var(--graph-accent)');
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.setAttribute('fill', isShortestVertex ? SECOND_COLOR : MAIN_COLOR);
+                e.currentTarget.setAttribute('fill', isShortestVertex ? 'var(--graph-accent)' : 'var(--graph-main)');
               }}
             />
           );
