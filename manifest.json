@@ -1,0 +1,25 @@
+{
+  "name": "Graph Painter",
+  "short_name": "GraphPainter",
+  "description": "Visualize graph data structures and run algorithms like Dijkstra.",
+  "manifest_version": 3,
+  "version": "1.0.0",
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png"
+    },
+    "default_title": "Graph Painter",
+    "default_popup": "index.html"
+  },
+  "permissions": [],
+  "author": "dkpark10",
+  "homepage_url": "https://dkpark10.github.io/graphpainter"
+}
