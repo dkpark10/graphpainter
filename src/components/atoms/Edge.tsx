@@ -57,7 +57,7 @@ export default function Edge({ from, to, cost, color }: EdgeProps) {
         dy=".9em"
         fontSize="14"
         fill={color}
-        textAnchor="right"
+        textAnchor="end"
       >
         {cost}
       </text>

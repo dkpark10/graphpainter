@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { cva } from 'class-variance-authority';
 import { ChevronDown } from 'lucide-react';
-import Svg from '@/components/molecules/Main3';
+import Svg from '@/components/molecules/Svg';
 import Textarea from '@/components/atoms/TextArea';
 import Config from '@/components/molecules/Config';
 import { BUILD_TARGET, cn } from '@/utils';
@@ -20,7 +20,7 @@ const rootLayoutStyle = cva('', {
 const headerStyle = cva('', {
   variants: {
     env: {
-      web: 'flex items-center justify-center py-4',
+      web: 'flex items-center justify-center py-4 gap-1',
       extension: 'hidden',
     },
   },
@@ -42,10 +42,8 @@ export default function App() {
     <div className={cn(rootLayoutStyle({ env: BUILD_TARGET }))}>
       <span className="hidden" data-version={packageInfo.version} />
       <header className={headerStyle({ env: BUILD_TARGET })}>
-        <h1 className="text-3xl flex items-center">
-          <img className="w-8 h-8" alt="main-img" src="graphpaintericon.png" />
-          Graph Painter
-        </h1>
+        <img className="w-8 h-8" alt="main-img" src="graphpaintericon.png" />
+        <h1 className="text-3xl">Graph Painter</h1>
       </header>
       {BUILD_TARGET === 'extension' ? (
         <section className="flex flex-col gap-2">

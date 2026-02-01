@@ -10,11 +10,11 @@
     "build:local": "cross-env LOCAL_BUILD=true webpack --config webpack.prod.js",
     "build:extension": "webpack --config webpack.extension.js",
     "zip:extension": "cd dist && zip -r ../graphpainter-extension.zip . && cd ..",
-    "package:extension": "yarn build:extension && yarn zip:extension",
+    "package:extension": "pnpm run build:extension && pnpm run zip:extension",
     "prebuild": "rimraf dist",
     "lint": "eslint './src/**/*.{ts,tsx,js,jsx}'",
     "lint:fix": "eslint --fix \"./src/**/*.{ts,tsx,js,jsx}\"",
-    "predeploy": "yarn run build",
+    "predeploy": "pnpm run build",
     "deploy": "gh-pages -d build",
     "test": "jest",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx}\""
@@ -22,7 +22,7 @@
   "dependencies": {
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "d3": "^7.8.4",
+    "d3-force": "^3.0.0",
     "lucide-react": "^0.563.0",
     "radix-ui": "^1.4.3",
     "react": "^18.2.0",
@@ -41,14 +41,13 @@
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^12.8.3",
-    "@types/d3": "^7.4.0",
+    "@types/d3-force": "^3.0.10",
     "@types/jest": "^29.2.5",
     "@types/node": "^25.1.0",
     "@types/react": "^18.2.55",
     "@types/react-dom": "^18.2.19",
     "@typescript-eslint/eslint-plugin": "^6.4.0",
     "@typescript-eslint/parser": "^6.21.0",
-    "@yarnpkg/sdks": "^3.1.0",
     "autoprefixer": "^10.4.14",
     "babel-jest": "^29.5.0",
     "babel-loader": "^9.1.2",
@@ -89,6 +88,5 @@
     "webpack-cli": "^4.9.1",
     "webpack-dev-server": "^4.7.1",
     "webpack-merge": "^5.8.0"
-  },
-  "packageManager": "yarn@4.12.0"
+  }
 }
