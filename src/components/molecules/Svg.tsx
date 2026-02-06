@@ -36,8 +36,8 @@ export default function Svg() {
   const draggingNodeRef = useRef<SimulationNode | null>(null);
   const [, forceUpdate] = useReducer((x: number) => x + 1, 0);
 
-  const nodes = useGraphStore((state) => state.nodes, shallow) as SimulationNode[];
-  const links = useGraphStore((state) => state.links, shallow) as unknown as SimulationLink[];
+  const nodes = useGraphStore((state) => state.graph.nodes, shallow) as SimulationNode[];
+  const links = useGraphStore((state) => state.graph.links, shallow) as unknown as SimulationLink[];
 
   // 마커 표시 여부
   const isArrow = useArrowStore((state) => state.isArrow);

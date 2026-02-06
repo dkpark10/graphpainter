@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { shallow } from 'zustand/shallow';
 import Switch from '@/components/ui/switch';
 import Label from '@/components/ui/label';
@@ -30,7 +30,7 @@ export default function Config() {
 
   const [invalidInputNodes, setInvalidInputNodes] = useState(false);
 
-  const { nodes, rawInputData } = useGraphStore((state) => state, shallow);
+  const { nodes, rawInputData } = useGraphStore((state) => state.graph, shallow);
 
   const isExistNodes = () =>
     nodes.some((node) => node.value === inputFromRef.current?.value) &&
@@ -57,30 +57,38 @@ export default function Config() {
     });
   };
 
+  useEffect(() => {
+    setShortestPath({
+      from: '',
+      to: '',
+      shortestPath: [],
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rawInputData]);
+
   return (
     <Card>
       <CardContent className="p-4 space-y-4">
         {/* Arrow Marker Toggle */}
         <div className="flex items-center justify-between">
-          <Label htmlFor="arrow-mode" className="text-sm font-medium">
+          <Label htmlFor="arrow-mode" className="text-sm font-medium cursor-pointer">
             Arrow Marker
           </Label>
-          <Switch id="arrow-mode" checked={isArrow} onCheckedChange={setArrowDirect} />
+          <Switch id="arrow-mode" className="cursor-pointer" checked={isArrow} onCheckedChange={setArrowDirect} />
         </div>
 
         {/* Simulation Toggle */}
         <div className="flex items-center justify-between">
-          <Label htmlFor="simulation-mode" className="text-sm font-medium">
+          <Label htmlFor="simulation-mode" className="text-sm font-medium cursor-pointer">
             Force Simulation
           </Label>
-          <Switch id="simulation-mode" checked={runForce} onCheckedChange={setRunForce} />
+          <Switch id="simulation-mode" className="cursor-pointer" checked={runForce} onCheckedChange={setRunForce} />
         </div>
 
         <Separator />
 
         {/* Shortest Path Finder */}
         <div className="space-y-3">
-          <Label className="text-sm font-medium">Find Shortest Path</Label>
           <div className="flex gap-2">
             <div className="flex-1 space-y-1">
               <Label htmlFor="from" className="text-xs text-muted-foreground">
@@ -97,7 +105,7 @@ export default function Config() {
           </div>
           {invalidInputNodes && <p className="text-xs text-destructive">Invalid node input</p>}
           <Button className="w-full cursor-pointer" size="sm" onClick={findShortestPath}>
-            Find Path
+            Find Shortest Path
           </Button>
         </div>
       </CardContent>

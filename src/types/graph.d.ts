@@ -1,4 +1,4 @@
-import type { SimulationNodeDatum, SimulationLinkDatum, Datum } from 'd3';
+import type { SimulationNodeDatum, SimulationLinkDatum, Datum } from 'd3-force';
 
 export interface Size {
   width: number;
