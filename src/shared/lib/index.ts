@@ -3,6 +3,7 @@ import { twMerge } from 'tailwind-merge';
 
 export { textAreaStyle } from './ui-cva';
 export { createGraphData } from './create-graph';
+export { chromeStorage } from './chrome-storage';
 
 export const isObject = (data: unknown): boolean => {
   return (typeof data === 'object' && data !== null) || Array.isArray(data);

@@ -19,7 +19,9 @@
     "default_title": "Graph Painter",
     "default_popup": "index.html"
   },
-  "permissions": [],
+  "permissions": [
+    "storage"
+  ],
   "author": "dkpark10",
   "homepage_url": "https://dkpark10.github.io/graphpainter"
 }

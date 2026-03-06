@@ -54,14 +54,14 @@ export default function TreeCanvas() {
     const treeLayout = d3.tree<TreeNode>().size([WIDTH - 60, HEIGHT - 80]);
     const layoutRoot = treeLayout(hierarchyRoot);
 
-    const nodes = layoutRoot.descendants() as HierarchyNode[];
-    nodes.forEach((node) => {
+    const descendantNodes = layoutRoot.descendants() as HierarchyNode[];
+    descendantNodes.forEach((node) => {
       node.y += 40;
       node.x += 30;
     });
 
     return {
-      treeNodes: nodes,
+      treeNodes: descendantNodes,
       treeLinks: layoutRoot.links(),
     };
   }, [treeData]);
@@ -104,16 +104,6 @@ export default function TreeCanvas() {
     node.fy = null;
     draggingNodeRef.current = null;
   }, []);
-
-  if (!treeData) {
-    return (
-      <svg width={WIDTH} height={HEIGHT} viewBox={`0 0 ${WIDTH} ${HEIGHT}`}>
-        <text x={WIDTH / 2} y={HEIGHT / 2} textAnchor="middle" fill="var(--graph-main)" fontSize={14}>
-          No tree data
-        </text>
-      </svg>
-    );
-  }
 
   return (
     <svg width={WIDTH} height={HEIGHT} viewBox={`0 0 ${WIDTH} ${HEIGHT}`} ref={svgRef}>
