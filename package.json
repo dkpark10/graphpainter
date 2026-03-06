@@ -18,6 +18,7 @@
     "predeploy": "pnpm run build",
     "deploy": "pnpm run deploy && pnpm run test && gh-pages -d dist",
     "test": "jest",
+    "test:watch": "jest --watch",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx}\""
   },
   "dependencies": {

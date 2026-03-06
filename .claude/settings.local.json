@@ -5,7 +5,9 @@
       "Bash(sips:*)",
       "Bash(ls:*)",
       "Bash(file:*)",
-      "Bash(pnpm add:*)"
+      "Bash(pnpm add:*)",
+      "Bash(npm test:*)",
+      "Bash(pnpm test:*)"
     ]
   }
 }
