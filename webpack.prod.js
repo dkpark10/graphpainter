@@ -6,6 +6,7 @@ const webpack = require('webpack');
 const { webpackCommonConfig } = require('./webpack.common.js');
 const path = require('path');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const ESLintPlugin = require('eslint-webpack-plugin');
 
 class CreateFilePlugin {
   constructor() {}
@@ -27,6 +28,7 @@ class CreateFilePlugin {
 const isLocalBuild = process.env.LOCAL_BUILD === 'true';
 
 module.exports = merge(webpackCommonConfig, {
+  entry: './src/app/web/index.tsx',
   mode: 'production',
   output: {
     path: path.resolve('dist/'),
@@ -41,11 +43,14 @@ module.exports = merge(webpackCommonConfig, {
     maxAssetSize: 512000,
   },
   plugins: [
+    new ESLintPlugin({
+      extensions: ['ts', 'tsx'],
+      failOnError: true,
+    }),
     new webpack.DefinePlugin({
       'process.env.BUILD_TARGET': JSON.stringify('web'),
     }),
     new CreateFilePlugin(),
-    // 파일, 폴더 복사 플러그인
     new CopyWebpackPlugin({
       patterns: [
         {

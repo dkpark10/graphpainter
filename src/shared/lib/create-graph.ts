@@ -1,4 +1,4 @@
-import { GraphData, Edge } from '@/types/graph';
+import { GraphData, Edge } from '@/shared/types';
 
 /** @description 입력값을 d3 nodesimullink 타입으로 파싱하는 함수 */
 export const createGraphData = (textAreaContent: string, LIMIT_INPUT_VALUE_LINE = 100): GraphData => {

@@ -1,6 +1,7 @@
+/* eslint-disable no-continue */
 /* eslint-disable max-classes-per-file */
 import { HeapQueue } from './heap-queue';
-import { GraphData } from '@/types/graph';
+import { GraphData } from '@/shared/types';
 import { createGraphData } from '@/shared/lib';
 
 export type AllNumber = { [key: string]: number };
@@ -59,11 +60,13 @@ export class Dijkstra {
       const { currentCost, currentVertex } = pq.top();
       pq.pop();
 
-      // eslint-disable-next-line no-continue
-      if (this.distance[currentVertex] < currentCost) continue;
+      if (this.distance[currentVertex] < currentCost) {
+        continue;
+      }
 
-      // eslint-disable-next-line no-continue
-      if (!this.transferLinkData[currentVertex]) continue;
+      if (!this.transferLinkData[currentVertex]) {
+        continue;
+      }
 
       this.transferLinkData[currentVertex].forEach((ele) => {
         const { nextVertex, cost } = ele;

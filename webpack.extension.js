@@ -6,6 +6,7 @@ const webpack = require('webpack');
 const { webpackCommonConfig } = require('./webpack.common.js');
 const path = require('path');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const ESLintPlugin = require('eslint-webpack-plugin');
 
 class CreateFilePlugin {
   constructor() {}
@@ -25,6 +26,7 @@ class CreateFilePlugin {
 }
 
 module.exports = merge(webpackCommonConfig, {
+  entry: './src/app/extension/index.tsx',
   mode: 'production',
   output: {
     path: path.resolve('dist/'),
@@ -39,6 +41,10 @@ module.exports = merge(webpackCommonConfig, {
     maxAssetSize: 512000,
   },
   plugins: [
+    new ESLintPlugin({
+      extensions: ['ts', 'tsx'],
+      failOnError: true,
+    }),
     new webpack.DefinePlugin({
       'process.env.BUILD_TARGET': JSON.stringify('extension'),
     }),

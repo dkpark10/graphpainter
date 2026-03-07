@@ -1,11 +1,10 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { shallow } from 'zustand/shallow';
-import { useGraphStore } from '@/store/graph';
+import clsx from 'clsx';
+import { useGraphStore, useTreeRoot, GraphData } from '@/shared';
 import { useDebounce } from '@/shared/hooks';
 import { Textarea } from '@/shared/ui';
-import { BUILD_TARGET, textAreaStyle, createGraphData } from '@/shared/lib';
-import { useTreeRoot } from '@/store/tree-root';
-import { GraphData } from '@/types/graph';
+import { textAreaStyle, createGraphData } from '@/shared/lib';
 
 export default function GraphTextArea(): JSX.Element {
   const rawInputData = useGraphStore((state) => state[state.mode].rawInputData);
@@ -44,7 +43,7 @@ export default function GraphTextArea(): JSX.Element {
   return (
     <Textarea
       id="textarea"
-      className={textAreaStyle({ env: BUILD_TARGET })}
+      className={clsx(textAreaStyle({ env: process.env.BUILD_TARGET }))}
       value={rawInputData}
       onChange={(e) => {
         setRawInputData(e.target.value);

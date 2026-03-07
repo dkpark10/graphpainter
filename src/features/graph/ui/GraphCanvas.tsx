@@ -3,22 +3,14 @@ import React, { useCallback, useEffect, useReducer, useRef } from 'react';
 import * as d3 from 'd3-force';
 import type { SimulationNodeDatum, Simulation } from 'd3-force';
 import { shallow } from 'zustand/shallow';
-import type { Vertex } from '@/types/graph';
-import { useGraphStore } from '@/store/graph';
-import { useArrowStore } from '@/store/node-arrow';
-import { useShortestPathStore } from '@/store/shortestpath';
+import type { Vertex } from '@/shared/types';
+import { useGraphStore, useArrowStore, useShortestPathStore } from '@/shared/store';
 import { isShortestEdge } from '@/features/graph/model/is-shortest-path';
-import { BUILD_TARGET } from '@/shared/lib';
-import { useRunForce } from '@/store/run-force';
+import { sizes } from '@/features/graph/const';
+import { useRunForce } from '@/shared/store';
 
 const arrowMarkId = 'arrow';
-const WIDTH = BUILD_TARGET === 'extension' ? 372 : 542;
-const HEIGHT = BUILD_TARGET === 'extension' ? 372 : 542;
-const diameter = BUILD_TARGET === 'extension' ? 16 : 18;
-const linkDistance = BUILD_TARGET === 'extension' ? 54 : 82;
-const getTextDx = (d: number) => {
-  return BUILD_TARGET === 'extension' ? d / 2 + d / 2 : d / 2 + d / 4;
-};
+const { WIDTH, HEIGHT, diameter, linkDistance, getTextDx } = sizes;
 
 type SimulationNode = SimulationNodeDatum & Vertex;
 type SimulationLink = {

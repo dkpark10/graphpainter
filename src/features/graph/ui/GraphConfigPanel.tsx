@@ -1,11 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { shallow } from 'zustand/shallow';
 import { Switch, Label, Card, CardContent, Input, Button, Separator } from '@/shared/ui';
+import { useArrowStore, useShortestPathStore, useGraphStore, useRunForce } from '@/shared/store';
 import { DijkstraBuilder } from '@/features/graph/model/dijkstra';
-import { useArrowStore } from '@/store/node-arrow';
-import { useShortestPathStore } from '@/store/shortestpath';
-import { useGraphStore } from '@/store/graph';
-import { useRunForce } from '@/store/run-force';
 
 export default function Config() {
   const inputFromRef = useRef<HTMLInputElement | null>(null);

@@ -2,16 +2,11 @@
 
 import React, { useCallback, useMemo, useRef, useReducer } from 'react';
 import * as d3 from 'd3-hierarchy';
-import { useGraphStore } from '@/store/graph';
-import { useTreeRoot } from '@/store/tree-root';
-import { BUILD_TARGET } from '@/shared/lib';
+import { useGraphStore, useTreeRoot } from '@/shared/store';
+import { sizes } from '@/features/tree/const';
 import { createTree } from '@/features/tree/model/createTree';
 
-const WIDTH = BUILD_TARGET === 'extension' ? 372 : 542;
-const HEIGHT = BUILD_TARGET === 'extension' ? 372 : 542;
-const nodeRadius = BUILD_TARGET === 'extension' ? 14 : 16;
-const fontSize = BUILD_TARGET === 'extension' ? 10 : 12;
-
+const { WIDTH, HEIGHT, nodeRadius, fontSize } = sizes;
 interface TreeNode {
   name: string;
   children: TreeNode[];

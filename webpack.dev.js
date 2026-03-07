@@ -1,11 +1,15 @@
 const webpack = require('webpack');
 const { merge } = require('webpack-merge');
 const { webpackCommonConfig } = require('./webpack.common.js');
+const packageInfo = require('./package.json');
 
 module.exports = (env) => {
-  const buildTarget = env.extension ? 'extension' : 'web';
+  const isExtension = env?.extension;
+  const buildTarget = isExtension ? 'extension' : 'web';
+  const entry = isExtension ? './src/app/extension/index.tsx' : './src/app/web/index.tsx';
 
   return merge(webpackCommonConfig, {
+    entry,
     mode: 'development',
     devtool: 'inline-source-map',
     devServer: {
@@ -15,6 +19,7 @@ module.exports = (env) => {
     },
     plugins: [
       new webpack.DefinePlugin({
+        'process.env.APP_VERSION': JSON.stringify(packageInfo.version),
         'process.env.BUILD_TARGET': JSON.stringify(buildTarget),
       }),
     ],

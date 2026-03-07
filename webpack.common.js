@@ -5,7 +5,7 @@ const { resolve } = require('path');
 const rootPath = resolve();
 
 const webpackCommonConfig = {
-  entry: './src/index.tsx',
+  // entry is set in each environment config (web/extension)
   resolve: {
     extensions: ['.js', '.jsx', '.ts', '.tsx'],
     alias: {

@@ -1,8 +1,7 @@
 import { createWithEqualityFn } from 'zustand/traditional';
 import { type StateCreator } from 'zustand';
-import { devtools, persist } from 'zustand/middleware';
-import { GraphData } from '@/types/graph';
-import { chromeStorage } from '@/shared/lib';
+import { devtools } from 'zustand/middleware';
+import { GraphData } from '@/shared/types';
 
 export type Mode = 'graph' | 'tree';
 
@@ -43,10 +42,7 @@ const initialState: GraphStoreState = {
   },
 };
 
-const graphStore: StateCreator<GraphStore, [], [['zustand/persist', unknown], ['zustand/devtools', never]]> = (
-  set,
-  get,
-) => ({
+const graphStore: StateCreator<GraphStore> = (set, get) => ({
   ...initialState,
 
   setMode: (mode) => set({ mode }),
@@ -66,35 +62,4 @@ const graphStore: StateCreator<GraphStore, [], [['zustand/persist', unknown], ['
   },
 });
 
-export const useGraphStore = createWithEqualityFn<GraphStore>()(
-  devtools(
-    persist(graphStore, {
-      name: 'graph-storage',
-
-      storage: chromeStorage,
-
-      partialize: (state) => ({
-        mode: state.mode,
-        graph: { rawInputData: state.graph.rawInputData },
-        tree: { rawInputData: state.tree.rawInputData },
-      }),
-
-      merge: (persisted, current) => {
-        const persistedState = persisted as Partial<GraphStoreState>;
-
-        return {
-          ...current,
-          mode: persistedState.mode ?? current.mode,
-          graph: {
-            ...current.graph,
-            rawInputData: persistedState.graph?.rawInputData ?? current.graph.rawInputData,
-          },
-          tree: {
-            ...current.tree,
-            rawInputData: persistedState.tree?.rawInputData ?? current.tree.rawInputData,
-          },
-        };
-      },
-    }),
-  ),
-);
+export const useGraphStore = createWithEqualityFn<GraphStore>()(devtools(graphStore));
