@@ -4,10 +4,9 @@ import * as d3 from 'd3-force';
 import type { SimulationNodeDatum, Simulation } from 'd3-force';
 import { shallow } from 'zustand/shallow';
 import type { Vertex } from '@/shared/types';
-import { useGraphStore, useArrowStore, useShortestPathStore } from '@/shared/store';
+import { useRunForce, useGraphStore, useArrowStore, useShortestPathStore } from '@/shared/store';
 import { isShortestEdge } from '@/features/graph/model/is-shortest-path';
 import { sizes } from '@/features/graph/const';
-import { useRunForce } from '@/shared/store';
 
 const arrowMarkId = 'arrow';
 const { WIDTH, HEIGHT, diameter, linkDistance, getTextDx } = sizes;

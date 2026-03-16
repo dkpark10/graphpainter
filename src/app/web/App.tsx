@@ -1,6 +1,7 @@
+import { SwitchTransition, CSSTransition } from 'react-transition-group';
 import { GraphCanvas, GraphTextArea, GraphConfigPanel } from '@/features/graph';
 import { TreeConfigPanel, TreeCanvas, TreeTextArea } from '@/features/tree';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui';
+import { Tabs, TabsList, TabsTrigger } from '@/shared/ui';
 import { useGraphStore, type Mode } from '@/shared/store';
 
 export default function App() {
@@ -24,28 +25,33 @@ export default function App() {
             tree
           </TabsTrigger>
         </TabsList>
-        <TabsContent value="graph">
-          <section className="w-full space-x-7 flex justify-center m-auto">
-            <aside className="w-52 flex flex-col content-between justify-between gap-6">
-              <GraphTextArea />
-              <GraphConfigPanel />
-            </aside>
-            <main className="w-[542px] h-[100%] border border-main-color rounded-xl">
-              <GraphCanvas />
-            </main>
-          </section>
-        </TabsContent>
-        <TabsContent value="tree">
-          <section className="w-full space-x-7 flex justify-center m-auto">
-            <aside className="w-52 flex flex-col content-between gap-6">
-              <TreeTextArea />
-              <TreeConfigPanel />
-            </aside>
-            <main className="w-[542px] h-[100%] border border-main-color rounded-xl">
-              <TreeCanvas />
-            </main>
-          </section>
-        </TabsContent>
+        <SwitchTransition mode="out-in">
+          <CSSTransition key={mode} classNames="tab-fade" timeout={200}>
+            <div className="flex-1 outline-none">
+              {mode === 'graph' ? (
+                <section className="w-full space-x-7 flex justify-center m-auto">
+                  <aside className="w-52 flex flex-col content-between justify-between gap-6">
+                    <GraphTextArea />
+                    <GraphConfigPanel />
+                  </aside>
+                  <main className="w-[542px] h-[100%] border border-main-color rounded-xl">
+                    <GraphCanvas />
+                  </main>
+                </section>
+              ) : (
+                <section className="w-full space-x-7 flex justify-center m-auto">
+                  <aside className="w-52 flex flex-col content-between gap-6">
+                    <TreeTextArea />
+                    <TreeConfigPanel />
+                  </aside>
+                  <main className="w-[542px] h-[100%] border border-main-color rounded-xl">
+                    <TreeCanvas />
+                  </main>
+                </section>
+              )}
+            </div>
+          </CSSTransition>
+        </SwitchTransition>
       </Tabs>
     </div>
   );

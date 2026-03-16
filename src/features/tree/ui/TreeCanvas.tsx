@@ -4,7 +4,7 @@ import React, { useCallback, useMemo, useRef, useReducer } from 'react';
 import * as d3 from 'd3-hierarchy';
 import { useGraphStore, useTreeRoot } from '@/shared/store';
 import { sizes } from '@/features/tree/const';
-import { createTree } from '@/features/tree/model/createTree';
+import { createTree } from '@/features/tree/model/create-tree';
 
 const { WIDTH, HEIGHT, nodeRadius, fontSize } = sizes;
 interface TreeNode {

@@ -132,3 +132,22 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Tab transition animations */
+.tab-fade-enter {
+  opacity: 0.2;
+}
+
+.tab-fade-enter-active {
+  opacity: 1;
+  transition: opacity 200ms ease-out;
+}
+
+.tab-fade-exit {
+  opacity: 1;
+}
+
+.tab-fade-exit-active {
+  opacity: 0.2;
+  transition: opacity 200ms ease-out;
+}

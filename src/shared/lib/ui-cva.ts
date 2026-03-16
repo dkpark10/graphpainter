@@ -1,10 +1,22 @@
 import { cva } from 'class-variance-authority';
 
-export const textAreaStyle = cva('resize-none text-white bg-foreground', {
+const defaultStyle = 'h-46 resize-none text-white bg-foreground';
+const defaultEx = 'text-base leading-tight';
+
+export const graphTextAreaStyle = cva(defaultStyle, {
   variants: {
     env: {
       web: 'h-full',
-      extension: 'h-46 text-base leading-tight',
+      extension: defaultEx,
+    },
+  },
+});
+
+export const treeTextAreaStyle = cva(defaultStyle, {
+  variants: {
+    env: {
+      web: '',
+      extension: defaultEx,
     },
   },
 });

@@ -1,7 +1,7 @@
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
-export { textAreaStyle } from './ui-cva';
+export { graphTextAreaStyle, treeTextAreaStyle } from './ui-cva';
 export { createGraphData } from './create-graph';
 
 export const isObject = (data: unknown): boolean => {

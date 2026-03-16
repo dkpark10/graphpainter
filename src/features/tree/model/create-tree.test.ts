@@ -1,4 +1,4 @@
-import { createTree } from './createTree';
+import { createTree } from './create-tree';
 
 describe('createTree', () => {
   test('트리 생성', () => {

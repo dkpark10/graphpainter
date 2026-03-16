@@ -3,7 +3,7 @@ import { shallow } from 'zustand/shallow';
 import { useGraphStore } from '@/shared/store';
 import { useDebounce } from '@/shared/hooks';
 import { Textarea } from '@/shared/ui';
-import { textAreaStyle, createGraphData } from '@/shared/lib';
+import { graphTextAreaStyle, createGraphData } from '@/shared/lib';
 
 export default function GraphTextArea(): JSX.Element {
   const rawInputData = useGraphStore((state) => state[state.mode].rawInputData);
@@ -22,7 +22,7 @@ export default function GraphTextArea(): JSX.Element {
   return (
     <Textarea
       id="textarea"
-      className={textAreaStyle({ env: process.env.BUILD_TARGET })}
+      className={graphTextAreaStyle({ env: process.env.BUILD_TARGET })}
       value={rawInputData}
       onChange={(e) => {
         setRawInputData(e.target.value);
