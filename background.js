@@ -1,1 +1,1 @@
-chrome.action.onClicked.addListener(()=>{chrome.tabs.create({url:chrome.runtime.getURL("index.html")})});
+const KEY="key";chrome.runtime.onMessage.addListener((e,t,o)=>"GET_STORAGE"===e.type?(chrome.storage.local.get(KEY).then(e=>{o(e[KEY])}),!0):(chrome.storage.local.set({[KEY]:e.data}).then(()=>{o(!0)}),!0));
