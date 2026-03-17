@@ -16,7 +16,7 @@
     "lint": "eslint './src/**/*.{ts,tsx,js,jsx}'",
     "lint:fix": "eslint --fix \"./src/**/*.{ts,tsx,js,jsx}\"",
     "predeploy": "pnpm run build",
-    "deploy": "pnpm run deploy && pnpm run test && gh-pages -d dist",
+    "deploy": "pnpm run predeploy && pnpm run test && gh-pages -d dist",
     "test": "jest",
     "test:watch": "jest --watch",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx}\""

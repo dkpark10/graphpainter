@@ -48,6 +48,7 @@ module.exports = merge(webpackCommonConfig, {
       failOnError: true,
     }),
     new webpack.DefinePlugin({
+      'process.env.APP_VERSION': JSON.stringify(packageInfo.version),
       'process.env.BUILD_TARGET': JSON.stringify('web'),
     }),
     new CreateFilePlugin(),
