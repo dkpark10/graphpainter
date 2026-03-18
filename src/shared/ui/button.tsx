@@ -1,5 +1,5 @@
-import * as React from 'react';
 import { Slot } from 'radix-ui';
+import * as React from 'react';
 import { cn } from '@/shared/lib';
 
 type ButtonProps = React.ComponentProps<'button'> & {

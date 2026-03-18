@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
-import { useGraphStore, useTreeRoot } from '@/shared/store';
-import { extensionStorage, type StorageData } from '@/app/extension/lib';
+import { useGraphStore, useTreeRoot } from '@/shared/lib';
+import { extensionStorage, type StorageData } from './extension-storage';
 
 export const useChromeStorage = () => {
   const isFirstRender = useRef(true);

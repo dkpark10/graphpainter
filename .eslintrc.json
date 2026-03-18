@@ -22,15 +22,20 @@
     "plugin:react/recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:@typescript-eslint/recommended-requiring-type-checking",
-    "plugin:prettier/recommended"
+    "plugin:prettier/recommended",
+    "@feature-sliced"
   ],
-  "plugins": [
-    "react",
-    "@typescript-eslint"
-  ],
+  "plugins": ["react", "@typescript-eslint", "boundaries"],
+  "settings": {
+    "import/resolver": {
+      "typescript": {
+        "alwaysTryTypes": true
+      }
+    }
+  },
   "rules": {
-    "react/prop-types": ["off"], // prop type off
-    "react/require-default-props": ["off"], // 옵셔널 props 허용 여부
+    "react/prop-types": ["off"], // prop type 강제 명시 off
+    "react/require-default-props": ["off"], // 옵셔널 props 허용 여부 강제 off
     "react/jsx-props-no-spreading": ["off"], // props spread 허용 여부
     "import/extensions": [
       "error",
@@ -46,9 +51,7 @@
     "jsx-a11y/label-has-associated-control": [
       "error",
       {
-        "labelAttributes": [
-          "htmlFor"
-        ]
+        "labelAttributes": ["htmlFor"]
       }
     ]
   }

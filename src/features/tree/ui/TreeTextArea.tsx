@@ -1,10 +1,9 @@
+import clsx from 'clsx';
 import { useCallback, useEffect, useRef } from 'react';
 import { shallow } from 'zustand/shallow';
-import clsx from 'clsx';
-import { useGraphStore, useTreeRoot, GraphData } from '@/shared';
-import { useDebounce } from '@/shared/hooks';
+import { useGraphStore, useTreeRoot, useDebounce, treeTextAreaStyle, createGraphData } from '@/shared/lib';
+import type { GraphData } from '@/shared/model';
 import { Textarea } from '@/shared/ui';
-import { treeTextAreaStyle, createGraphData } from '@/shared/lib';
 
 export default function GraphTextArea(): JSX.Element {
   const rawInputData = useGraphStore((state) => state[state.mode].rawInputData);

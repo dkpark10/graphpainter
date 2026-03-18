@@ -1,9 +1,9 @@
 import '../styles/globals.css';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { useGraphStore, useTreeRoot } from '@/shared/lib';
 import App from './App';
-import { extensionStorage } from './lib';
-import { useGraphStore, useTreeRoot } from '@/shared/store';
+import { extensionStorage } from './store';
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 

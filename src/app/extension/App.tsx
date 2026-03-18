@@ -1,12 +1,12 @@
-import { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
+import { useState } from 'react';
 import { SwitchTransition, CSSTransition } from 'react-transition-group';
 import { GraphCanvas, GraphTextArea, GraphConfigPanel } from '@/features/graph';
 import { TreeConfigPanel, TreeCanvas, TreeTextArea } from '@/features/tree';
 import { cn } from '@/shared/lib';
+import { useGraphStore, type Mode } from '@/shared/lib';
 import { Tabs, TabsList, TabsTrigger } from '@/shared/ui';
-import { useGraphStore, type Mode } from '@/shared/store';
-import { useChromeStorage } from './hooks/use-chrome-storage';
+import { useChromeStorage } from './store';
 
 export default function App() {
   const [isConfigOpen, setIsConfigOpen] = useState(false);

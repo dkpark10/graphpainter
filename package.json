@@ -11,7 +11,7 @@
     "build:local": "cross-env LOCAL_BUILD=true webpack --config webpack.prod.js",
     "build:ex": "webpack --config webpack.extension.js",
     "zip:ex": "cd dist && zip -r ../graphpainter-extension.zip . && cd ..",
-    "package:ex": "pnpm run build:extension && pnpm run zip:extension",
+    "package:ex": "pnpm run build:ex && pnpm run zip:ex",
     "prebuild": "rimraf dist",
     "lint": "eslint './src/**/*.{ts,tsx,js,jsx}'",
     "lint:fix": "eslint --fix \"./src/**/*.{ts,tsx,js,jsx}\"",
@@ -19,7 +19,8 @@
     "deploy": "pnpm run predeploy && pnpm run test && gh-pages -d dist",
     "test": "jest",
     "test:watch": "jest --watch",
-    "format": "prettier --write \"**/*.{ts,tsx,js,jsx}\""
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx}\"",
+    "fsd": "npx steiger ./src"
   },
   "dependencies": {
     "class-variance-authority": "^0.7.1",
@@ -41,6 +42,7 @@
     "@babel/preset-env": "^7.21.4",
     "@babel/preset-react": "^7.16.5",
     "@babel/preset-typescript": "^7.16.5",
+    "@feature-sliced/eslint-config": "^0.1.1",
     "@tailwindcss/postcss": "^4.1.11",
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^11.2.7",
@@ -66,6 +68,8 @@
     "eslint-config-airbnb-typescript": "^17.0.0",
     "eslint-config-prettier": "^8.6.0",
     "eslint-config-standard-with-typescript": "latest",
+    "eslint-import-resolver-typescript": "^4.4.4",
+    "eslint-plugin-boundaries": "^6.0.0",
     "eslint-plugin-import": "^2.25.2",
     "eslint-plugin-jest": "^27.2.1",
     "eslint-plugin-jsx-a11y": "^6.5.1",
@@ -87,6 +91,7 @@
     "postcss-loader": "^7.2.4",
     "prettier": "^2.8.3",
     "rimraf": "^3.0.2",
+    "steiger": "^0.5.11",
     "style-loader": "^3.3.2",
     "tailwind-scrollbar-hide": "^4.0.0",
     "tailwindcss": "^4.1.11",

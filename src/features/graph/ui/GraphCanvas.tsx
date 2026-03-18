@@ -1,12 +1,12 @@
 /* eslint-disable no-param-reassign */
-import React, { useCallback, useEffect, useReducer, useRef } from 'react';
 import * as d3 from 'd3-force';
 import type { SimulationNodeDatum, Simulation } from 'd3-force';
+import React, { useCallback, useEffect, useReducer, useRef } from 'react';
 import { shallow } from 'zustand/shallow';
-import type { Vertex } from '@/shared/types';
-import { useRunForce, useGraphStore, useArrowStore, useShortestPathStore } from '@/shared/store';
-import { isShortestEdge } from '@/features/graph/model/is-shortest-path';
-import { sizes } from '@/features/graph/const';
+import { useRunForce, useGraphStore, useArrowStore, useShortestPathStore } from '@/shared/lib';
+import type { Vertex } from '@/shared/model';
+import { sizes } from '../config';
+import { isShortestEdge } from '../model';
 
 const arrowMarkId = 'arrow';
 const { WIDTH, HEIGHT, diameter, linkDistance, getTextDx } = sizes;

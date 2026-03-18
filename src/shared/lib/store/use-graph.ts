@@ -1,7 +1,7 @@
-import { createWithEqualityFn } from 'zustand/traditional';
 import { type StateCreator } from 'zustand';
 import { devtools } from 'zustand/middleware';
-import { GraphData } from '@/shared/types';
+import { createWithEqualityFn } from 'zustand/traditional';
+import type { GraphData } from '@/shared/model';
 
 export type Mode = 'graph' | 'tree';
 

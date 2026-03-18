@@ -1,8 +1,8 @@
 /* eslint-disable no-continue */
 /* eslint-disable max-classes-per-file */
-import { HeapQueue } from './heap-queue';
-import { GraphData } from '@/shared/types';
 import { createGraphData } from '@/shared/lib';
+import type { GraphData } from '@/shared/model';
+import { HeapQueue } from './heap-queue';
 
 export type AllNumber = { [key: string]: number };
 

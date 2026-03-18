@@ -1,6 +1,6 @@
-import { createWithEqualityFn } from 'zustand/traditional';
 import { type StateCreator } from 'zustand';
 import { devtools } from 'zustand/middleware';
+import { createWithEqualityFn } from 'zustand/traditional';
 
 export interface ShortestPathState {
   from: string;

@@ -1,10 +1,10 @@
 /* eslint-disable no-param-reassign */
 
-import React, { useCallback, useMemo, useRef, useReducer } from 'react';
 import * as d3 from 'd3-hierarchy';
-import { useGraphStore, useTreeRoot } from '@/shared/store';
-import { sizes } from '@/features/tree/const';
-import { createTree } from '@/features/tree/model/create-tree';
+import React, { useCallback, useMemo, useRef, useReducer } from 'react';
+import { useGraphStore, useTreeRoot } from '@/shared/lib';
+import { sizes } from '../config';
+import { createTree } from '../model';
 
 const { WIDTH, HEIGHT, nodeRadius, fontSize } = sizes;
 interface TreeNode {

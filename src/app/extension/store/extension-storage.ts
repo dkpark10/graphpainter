@@ -1,4 +1,4 @@
-import { Mode } from '@/shared/store';
+import { Mode } from '@/shared/lib';
 
 export interface StorageData {
   mode: Mode;

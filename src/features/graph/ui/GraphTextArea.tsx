@@ -1,9 +1,7 @@
 import { useEffect } from 'react';
 import { shallow } from 'zustand/shallow';
-import { useGraphStore } from '@/shared/store';
-import { useDebounce } from '@/shared/hooks';
+import { useDebounce, graphTextAreaStyle, createGraphData, useGraphStore } from '@/shared/lib';
 import { Textarea } from '@/shared/ui';
-import { graphTextAreaStyle, createGraphData } from '@/shared/lib';
 
 export default function GraphTextArea(): JSX.Element {
   const rawInputData = useGraphStore((state) => state[state.mode].rawInputData);

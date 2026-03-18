@@ -1,5 +1,5 @@
+import { useTreeRoot } from '@/shared/lib';
 import { Label, Card, CardContent, Input } from '@/shared/ui';
-import { useTreeRoot } from '@/shared/store';
 
 export default function Config() {
   const { root, setTreeRoot } = useTreeRoot();
