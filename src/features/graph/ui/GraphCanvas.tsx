@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import * as d3 from 'd3-force';
 import type { SimulationNodeDatum, Simulation } from 'd3-force';
-import React, { useCallback, useEffect, useReducer, useRef } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useReducer, useRef } from 'react';
 import { shallow } from 'zustand/shallow';
 import { useRunForce, useGraphStore, useArrowStore, useShortestPathStore } from '@/shared/lib';
 import type { Vertex } from '@/shared/model';
@@ -25,6 +25,10 @@ export default function Svg() {
   const simulationRef = useRef<Simulation<SimulationNode, undefined>>();
   // 현재 드래깅 되는 노드
   const draggingNodeRef = useRef<SimulationNode | null>(null);
+  // 노드 위치 저장 (입력 변경 시 위치 유지용)
+  const nodePositionsRef = useRef<Map<string, { x: number; y: number; fx?: number | null; fy?: number | null }>>(
+    new Map(),
+  );
   const [, forceUpdate] = useReducer((x: number) => x + 1, 0);
 
   const nodes = useGraphStore((state) => state.graph.nodes, shallow) as SimulationNode[];
@@ -37,10 +41,43 @@ export default function Svg() {
   // 시뮬레이션 실행 여부
   const runForce = useRunForce((state) => state.runForce);
 
-  // Simulation 초기화 - tick에서 forceUpdate만 호출
-  useEffect(() => {
+  // 렌더링용 노드 동기적으로 준비 (깜빡임 방지)
+  const renderNodes = useMemo<SimulationNode[]>(() => {
+    // 기존 시뮬레이션에서 위치 저장
+    if (simulationRef.current) {
+      simulationRef.current.nodes().forEach((node) => {
+        if (node.x !== undefined && node.y !== undefined) {
+          nodePositionsRef.current.set(node.value, {
+            x: node.x,
+            y: node.y,
+            fx: node.fx,
+            fy: node.fy,
+          });
+        }
+      });
+    }
+
+    // 새 노드 배열 생성 (기존 위치 복원)
+    const newNodes: SimulationNode[] = nodes.map((node) => {
+      const savedPos = nodePositionsRef.current.get(node.value);
+      if (savedPos) {
+        return { ...node, x: savedPos.x, y: savedPos.y, fx: savedPos.fx, fy: savedPos.fy };
+      }
+      // 새 노드는 중앙 근처에 랜덤 배치
+      return { ...node, x: WIDTH / 2 + (Math.random() - 0.5) * 50, y: HEIGHT / 2 + (Math.random() - 0.5) * 50 };
+    });
+    return newNodes;
+  }, [nodes]);
+
+  // Simulation 초기화 (DOM 업데이트 전 동기 실행)
+  useLayoutEffect(() => {
+    const hasExistingNodes = nodePositionsRef.current.size > 0;
+
+    // 기존 시뮬레이션 정지
+    simulationRef.current?.stop();
+
     simulationRef.current = d3
-      .forceSimulation(nodes)
+      .forceSimulation(renderNodes)
       .force(
         'link',
         d3
@@ -51,12 +88,13 @@ export default function Svg() {
       .force('charge', d3.forceManyBody().strength(-1200).distanceMin(linkDistance))
       .force('x', d3.forceX(WIDTH / 2))
       .force('y', d3.forceY(HEIGHT / 2))
-      .on('tick', forceUpdate);
+      .on('tick', forceUpdate)
+      .alpha(hasExistingNodes ? 0.1 : 1);
 
     return () => {
       simulationRef.current?.stop();
     };
-  }, [nodes, links]);
+  }, [renderNodes, links]);
 
   // 시뮬레이션 실행/정지 제어
   useEffect(() => {
@@ -196,7 +234,7 @@ export default function Svg() {
 
       {/* Nodes (circles) */}
       <g stroke="var(--graph-main)" strokeOpacity={1} strokeWidth={2.5}>
-        {nodes.map((node) => {
+        {renderNodes.map((node) => {
           const isShortestVertex = shortestPathState.shortestPath.some((vertex) => vertex === node.value);
 
           return (
@@ -224,7 +262,7 @@ export default function Svg() {
 
       {/* Node labels */}
       <g className="pointer-events-none" fill="white" fontSize={12}>
-        {nodes.map((node) => (
+        {renderNodes.map((node) => (
           <text key={`label-${node.value}`} x={node.x ?? 0} y={node.y ?? 0} textAnchor="middle" dy="6">
             {node.value}
           </text>
