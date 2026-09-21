@@ -9,7 +9,9 @@ import { sizes } from '../config';
 import { isShortestEdge } from '../model';
 
 const arrowMarkId = 'arrow';
-const { WIDTH, HEIGHT, diameter, linkDistance, getTextDx } = sizes;
+const { WIDTH, HEIGHT, diameter, linkDistance } = sizes;
+// cost 라벨을 간선에서 수직 방향으로 띄우는 거리
+const costLabelOffset = 10;
 
 type SimulationNode = SimulationNodeDatum & Vertex;
 type SimulationLink = {
@@ -184,14 +186,20 @@ export default function Svg() {
       <g strokeOpacity={0.8} strokeLinecap="round">
         {links.map((link, index) => {
           const { source, target, cost } = link;
-          const pathId = `edge-path-${index}`;
           const isShortestLink = isShortestEdge(source.value, target.value, shortestPathState.shortestPath);
+          // cost 라벨: 간선 중점에서 수직 방향으로 띄운 위치 (회전 없이 항상 똑바로)
+          const sx = source.x ?? 0;
+          const sy = source.y ?? 0;
+          const tx = target.x ?? 0;
+          const ty = target.y ?? 0;
+          const length = Math.hypot(tx - sx, ty - sy) || 1;
+          const costX = (sx + tx) / 2 + (-(ty - sy) / length) * costLabelOffset;
+          const costY = (sy + ty) / 2 + ((tx - sx) / length) * costLabelOffset;
 
           return (
             // eslint-disable-next-line react/no-array-index-key
             <React.Fragment key={`${source.value}-${target.value}-${index}`}>
               <path
-                id={pathId}
                 d={`M ${source.x ?? 0} ${source.y ?? 0} L ${target.x ?? 0} ${target.y ?? 0}`}
                 strokeWidth={isShortestLink ? 9 : 2}
                 stroke={isShortestLink ? 'var(--graph-accent)' : 'var(--graph-main)'}
@@ -218,13 +226,14 @@ export default function Svg() {
               {cost !== undefined && (
                 <text
                   className="pointer-events-none"
-                  dy="-4"
-                  dx={getTextDx(linkDistance)}
+                  x={costX}
+                  y={costY}
                   fontSize="12"
                   fill="var(--graph-main)"
                   textAnchor="middle"
+                  dominantBaseline="middle"
                 >
-                  <textPath xlinkHref={`#${pathId}`}>{cost}</textPath>
+                  {cost}
                 </text>
               )}
             </React.Fragment>

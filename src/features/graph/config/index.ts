@@ -5,5 +5,4 @@ export const sizes = {
   HEIGHT: BUILD_TARGET === 'extension' ? 372 : 542,
   diameter: BUILD_TARGET === 'extension' ? 16 : 18,
   linkDistance: BUILD_TARGET === 'extension' ? 54 : 82,
-  getTextDx: (d: number) => (BUILD_TARGET === 'extension' ? d / 2 + d / 2 : d / 2 + d / 4),
 };
